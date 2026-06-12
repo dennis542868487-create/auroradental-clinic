@@ -1,0 +1,15 @@
+source_url,canonical_url,page_title,access_status,discovery_source,content_type,classification,target_route,extraction_status,build_status,qa_status,notes
+https://auroradental.clinic/,https://auroradental.clinic/,Aurora Dental – Dental care for the whole family,200,nav+wp-sitemap.xml,text/html,BUILD,/index.html,DONE,DONE,PASS,Homepage; hero + intro + brand sections
+https://auroradental.clinic/staff/,https://auroradental.clinic/staff/,Meet the Team – Aurora Dental,200,nav+wp-sitemap.xml,text/html,BUILD,/staff/index.html,DONE,DONE,PASS,4 team bios (2 dentists 2 hygienists)
+https://auroradental.clinic/services/,https://auroradental.clinic/services/,A Full Spectrum of Dental Services – Aurora Dental,200,nav+wp-sitemap.xml,text/html,BUILD,/services/index.html,DONE,DONE,PASS,10 service categories
+https://auroradental.clinic/faq/,https://auroradental.clinic/faq/,Frequently Asked Questions – Aurora Dental,200,nav+wp-sitemap.xml,text/html,BUILD,/faq/index.html,DONE,DONE,PASS,10 Q&A accordion
+https://auroradental.clinic/contact/,https://auroradental.clinic/contact/,How to Contact Aurora Dental – Aurora Dental,200,nav+wp-sitemap.xml,text/html,BUILD,/contact/index.html,DONE,DONE,PASS,Address/hours/map/booking form
+https://auroradental.clinic/sitemap.xml,,,404,robots.txt,xml,TECHNICAL_NONCONTENT,n/a,n/a,n/a,n/a,Yoast-style path 404; real sitemap is wp-sitemap.xml
+https://auroradental.clinic/wp-sitemap.xml,,WordPress sitemap,200,robots.txt-fallback,xml,TECHNICAL_NONCONTENT,n/a,n/a,n/a,n/a,Used for URL discovery; lists the 5 pages above
+https://auroradental.clinic/wp-admin/,,,n/a,robots.txt,system,TECHNICAL_NONCONTENT,n/a,n/a,n/a,n/a,WP admin – disallowed/non-content
+https://www.facebook.com/AuroraDentalinRichmond,,Facebook page,200,header+footer,external,EXTERNAL,n/a,n/a,n/a,PASS,Preserved exactly in link manifest
+https://www.linkedin.com/in/%E7%9C%9F%E5%AD%90-%E5%88%98-23934189/,,LinkedIn (Dr. Liu),200,header+footer,external,EXTERNAL,n/a,n/a,n/a,PASS,Preserved exactly
+https://g.co/kgs/xWzbcXG,,Google Maps / Reviews,200,header+footer+contact,external,EXTERNAL,n/a,n/a,n/a,PASS,Directions/reviews short link
+tel:6042716733,,Phone,n/a,global,external,EXTERNAL,n/a,n/a,n/a,PASS,Real tel: destination
+mailto:info@auroradental.clinic,,Clinic email,n/a,contact,external,EXTERNAL,n/a,n/a,n/a,PASS,Patient-facing email
+mailto:webmaster@auroradental.clinic,,Tech support email,n/a,footer,external,EXTERNAL,n/a,n/a,n/a,PASS,Footer support email
