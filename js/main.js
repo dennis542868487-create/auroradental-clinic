@@ -93,14 +93,43 @@
     if (row) row.classList.add("today");
   }
 
-  /* ---------- Contact form: validation + mailto handoff ---------- */
+  /* ============================================================
+     Contact form
+     ------------------------------------------------------------
+     >>> TO ACTIVATE REAL EMAIL DELIVERY (FormSubmit): <<<
+     Paste your FormSubmit AJAX endpoint into FORM_ENDPOINT below,
+     e.g.  "https://formsubmit.co/ajax/info@auroradental.clinic"
+     - Leave it "" (empty) → form keeps the no-setup mailto fallback.
+     - Set it           → form posts directly to that inbox (no mail
+                            app needed), keeping validation + inline
+                            success message. Change the email anytime
+                            by editing this one line.
+     See TODO-FORM-SETUP.md for the full step-by-step + activation.
+     ============================================================ */
+  var FORM_ENDPOINT = ""; // <-- paste FormSubmit AJAX URL here when you have the inbox
+
   var form = document.getElementById("booking-form");
   if (form) {
     var status = form.querySelector(".form-status");
+    var note = form.querySelector(".form-note");
+    var submitBtn = form.querySelector("button[type=submit]");
+
+    // If a real endpoint is configured, update the helper copy to match.
+    if (FORM_ENDPOINT && note) {
+      note.innerHTML = 'Your request is sent straight to our front desk. Prefer to talk? Call us at <a href="tel:6042716733">604-271-6733</a>.';
+    }
+
     function setErr(field, on) {
       var wrap = field.closest(".field");
       if (wrap) wrap.classList.toggle("invalid", on);
     }
+    function showStatus(msg, ok) {
+      if (!status) return;
+      status.innerHTML = msg;
+      status.classList.remove("ok", "err");
+      status.classList.add("show", ok ? "ok" : "err");
+    }
+
     form.addEventListener("submit", function (e) {
       e.preventDefault();
       var name = form.elements["your-name"];
@@ -116,18 +145,62 @@
         if (firstBad) firstBad.focus();
         return;
       }
-      var body =
-        "Full name: " + name.value.trim() + "\n" +
-        "Phone number: " + (phone.value.trim() || "(not provided)") + "\n" +
-        "Email address: " + email.value.trim() + "\n" +
-        "Reason for Appointment: " + (msg.value.trim() || "(not provided)") + "\n";
-      var href = "mailto:info@auroradental.clinic" +
-        "?subject=" + encodeURIComponent("Appointment request from " + name.value.trim()) +
-        "&body=" + encodeURIComponent(body);
-      if (status) { status.classList.add("show", "ok"); }
-      window.location.href = href;
+
+      var data = {
+        name: name.value.trim(),
+        phone: phone.value.trim() || "(not provided)",
+        email: email.value.trim(),
+        message: msg.value.trim() || "(not provided)"
+      };
+
+      // ---- Path A: real delivery via FormSubmit (when configured) ----
+      if (FORM_ENDPOINT) {
+        if (submitBtn) { submitBtn.disabled = true; submitBtn.dataset.label = submitBtn.textContent; submitBtn.textContent = "Sending…"; }
+        fetch(FORM_ENDPOINT, {
+          method: "POST",
+          headers: { "Content-Type": "application/json", "Accept": "application/json" },
+          body: JSON.stringify({
+            name: data.name,
+            phone: data.phone,
+            email: data.email,
+            message: data.message,
+            _subject: "Appointment request from " + data.name
+          })
+        })
+        .then(function (r) { return r.json(); })
+        .then(function (res) {
+          if (res && (res.success === "true" || res.success === true)) {
+            showStatus("Thank you! Your appointment request has been sent. We'll be in touch soon. For anything urgent, call <a href=\"tel:6042716733\">604-271-6733</a>.", true);
+            form.reset();
+          } else { throw new Error("send failed"); }
+        })
+        .catch(function () {
+          // Network/endpoint failure → fall back to mailto so the patient still gets through.
+          mailtoFallback(data);
+          showStatus("Opening your email app to send the request. If nothing happened, email <a href=\"mailto:info@auroradental.clinic\">info@auroradental.clinic</a> or call 604-271-6733.", true);
+        })
+        .finally(function () {
+          if (submitBtn) { submitBtn.disabled = false; if (submitBtn.dataset.label) submitBtn.textContent = submitBtn.dataset.label; }
+        });
+        return;
+      }
+
+      // ---- Path B: no-setup mailto fallback (default) ----
+      mailtoFallback(data);
+      showStatus("Thanks! Your email app should now be open with your request ready to send. If it didn't open, please email <a href=\"mailto:info@auroradental.clinic\">info@auroradental.clinic</a> or call 604-271-6733.", true);
       form.reset();
     });
+
+    function mailtoFallback(data) {
+      var body =
+        "Full name: " + data.name + "\n" +
+        "Phone number: " + data.phone + "\n" +
+        "Email address: " + data.email + "\n" +
+        "Reason for Appointment: " + data.message + "\n";
+      window.location.href = "mailto:info@auroradental.clinic" +
+        "?subject=" + encodeURIComponent("Appointment request from " + data.name) +
+        "&body=" + encodeURIComponent(body);
+    }
   }
 
   /* ---------- Footer year ---------- */

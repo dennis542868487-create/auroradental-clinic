@@ -297,6 +297,8 @@ p { color: var(--slate); }
 .form-status { margin-top: 1rem; padding: .9rem 1.1rem; border-radius: var(--radius-sm); font-size: .92rem; display: none; }
 .form-status.show { display: block; }
 .form-status.ok { background: #ecf8f4; color: var(--teal-700); border: 1px solid #c4e8df; }
+.form-status.err { background: #fdf1ee; color: #b34a32; border: 1px solid #f3cfc4; }
+.form-status a { color: inherit; text-decoration: underline; }
 
 .map-embed { border-radius: var(--radius); overflow: hidden; box-shadow: var(--shadow-sm); border: 1px solid var(--line); margin-top: 2.5rem; }
 .map-embed iframe { width: 100%; height: 420px; border: 0; filter: saturate(1.05); }
