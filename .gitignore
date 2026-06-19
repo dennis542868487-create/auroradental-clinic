@@ -1,5 +1,6 @@
 .DS_Store
 n8n-workflow-*.json
+n8n-code-*.js
 node_modules/
 .vercel/
 .env

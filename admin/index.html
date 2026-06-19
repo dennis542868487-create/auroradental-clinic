@@ -534,6 +534,10 @@ function addPreview(previewData) {
   const div = document.createElement('div');
   div.className = 'msg bot';
 
+  // Stash the commit payload so confirmPublish can send it back to n8n
+  window.__pendingCommits = window.__pendingCommits || {};
+  window.__pendingCommits[previewData.jobId] = previewData.commitData || [];
+
   const summary = previewData.summary || 'Ready to apply the following changes:';
   const changes = previewData.changes || [];
 
@@ -653,20 +657,33 @@ async function confirmPublish(jobId) {
     return;
   }
 
+  const commitData = (window.__pendingCommits && window.__pendingCommits[jobId]) || [];
+  if (!commitData.length) {
+    addMsg('bot', 'Sorry, the change data expired. Please send your request again.');
+    return;
+  }
+
   const statusEl = addStatus('Applying changes and deploying…');
 
   try {
     const res = await fetch('https://zyz18922182165.app.n8n.cloud/webhook/aurora-cms-confirm', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ jobId, token: ACCESS_TOKEN })
+      body: JSON.stringify({ jobId, token: ACCESS_TOKEN, commitData })
     });
     removeStatus();
-    const data = await res.json();
+
+    if (!res.ok) throw new Error(`Server error: ${res.status}`);
+
+    const text = await res.text();
+    let data = {};
+    try { data = text ? JSON.parse(text) : {}; } catch { data = {}; }
+
     addMsg('bot', data.message || '✓ Published! Your site will update in about 1–2 minutes.');
-  } catch {
+    delete window.__pendingCommits[jobId];
+  } catch (err) {
     removeStatus();
-    addMsg('bot', '✓ Change confirmed. Your site will update in about 1–2 minutes.');
+    addMsg('bot', `Could not publish: ${err.message}. Please try again.`);
   }
 }
 
