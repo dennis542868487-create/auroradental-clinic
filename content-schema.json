@@ -1,0 +1,124 @@
+{
+  "site": "auroradental-clinic",
+  "siteName": "Aurora Dental Clinic",
+  "repo": "REPLACE_WITH_GITHUB_USERNAME/auroradental-clinic",
+  "branch": "main",
+
+  "sitewide": {
+    "phone": {
+      "currentValue": "604-271-6733",
+      "note": "Update the number in ALL files listed below. Also update href='tel:...' attributes.",
+      "appearsIn": ["index.html", "contact/index.html", "staff/index.html", "faq/index.html", "services/index.html"]
+    },
+    "email": {
+      "currentValue": "info@auroradental.clinic",
+      "note": "Update both display text and mailto: href.",
+      "appearsIn": ["index.html", "contact/index.html", "faq/index.html"]
+    },
+    "address": {
+      "currentValue": "Unit 220, 10151 No. 3 Rd, Richmond, BC V7A 4R6",
+      "appearsIn": ["index.html", "contact/index.html", "staff/index.html"]
+    },
+    "hours": {
+      "currentValue": {
+        "monday": "Closed",
+        "tuesday": "10am – 6pm",
+        "wednesday": "10am – 6pm",
+        "thursday": "10am – 6pm",
+        "friday": "10am – 6pm",
+        "saturday": "9am – 4pm",
+        "sunday": "Closed"
+      },
+      "note": "Update hours table in contact/index.html and footer hours lists in all pages.",
+      "appearsIn": ["index.html", "contact/index.html", "staff/index.html", "faq/index.html", "services/index.html"]
+    }
+  },
+
+  "pages": {
+    "index.html": {
+      "description": "Homepage",
+      "editableFields": {
+        "heroEyebrow": "Family Dental Care · Richmond, BC",
+        "heroTitle": "Welcome to Aurora",
+        "heroSubtitle": "High-quality dental care for your whole family — built on oral health education, preventative care, and a non-invasive approach whenever possible.",
+        "heroCaption1": "Serving Richmond for 40+ Years",
+        "heroCaption2": "Experienced Dentists & Denturists",
+        "heroCaption3": "Implants & Orthodontics to restore your smile",
+        "heroImage": "/assets/images/hero-lucy-and-kiki.webp",
+        "trustStat1": "40+ Years serving the Richmond community",
+        "trustStat2": "4 Caring dentists & dental hygienists",
+        "trustStat3": "10+ Dental services offered in-house",
+        "welcomeHeading": "Dental care for the whole family",
+        "welcomePara1": "Aurora Dental Clinic is dedicated to providing the highest quality of dental services for your whole family. Our dentists advocate a non-invasive approach whenever possible.",
+        "welcomePara2": "We believe that through oral health education and preventative care, we can help our patients achieve optimal health. Our clinic is like one big family; we have been serving the Richmond community for over 35 years and have watched families grow up in our care. We look forward to meeting you!",
+        "welcomeImage": "/assets/images/lucy-and-baby.webp",
+        "ctaBandHeading": "Ready to meet your Richmond dental family?",
+        "ctaBandText": "Book an appointment today, or call our front desk and we'll be happy to help you get started."
+      }
+    },
+
+    "staff/index.html": {
+      "description": "Meet the Team page — dentists and hygienists",
+      "editableFields": {
+        "lucyName": "Dr. Lucy Liu, DMD, RD",
+        "lucyRole": "Dentist & Denturist",
+        "lucyPhoto": "/assets/images/dr-lucy-liu.jpg",
+        "lucyBio": "Multi-paragraph bio starting with 'Dr. Lucy (Zhenzi) Liu holds both dentist...'",
+        "jamesName": "Dr. James Hsia, BSc., DMD",
+        "jamesRole": "Dentist",
+        "jamesPhoto": "/assets/images/dr-james-hsia.jpg",
+        "jamesBio": "Multi-paragraph bio starting with 'Dr. James Hsia has practiced general dentistry since 1981...'",
+        "kylaName": "Kyla Imbat, RDH",
+        "kylaRole": "Registered Dental Hygienist",
+        "kylaPhoto": "/assets/images/kyla-imbat.jpg",
+        "kylaBio": "Kyla received her Dental Hygiene Diploma at Vancouver Community College...",
+        "avneetName": "Avneet Kang, RDH",
+        "avneetRole": "Registered Dental Hygienist",
+        "avneetPhoto": "/assets/images/avneet-kang.jpg",
+        "avneetBio": "Avneet graduated with a diploma in Sport Science in 2018 from Douglas College..."
+      },
+      "imageUploadFolder": "assets/images/",
+      "note": "For photo changes: upload new image to assets/images/, then update the src attribute in the HTML."
+    },
+
+    "faq/index.html": {
+      "description": "FAQ page — 10 questions in accordion format (<details>/<summary>)",
+      "note": "Each FAQ item is a <details class='faq-item'> block. Clients can edit questions/answers, add new ones, or remove existing ones.",
+      "editableFields": {
+        "faq1Q": "Do you offer direct billing?",
+        "faq2Q": "What do I bring to my first visit?",
+        "faq3Q": "Where do I find the new patient form?",
+        "faq4Q": "Is the clinic handicap accessible?",
+        "faq5Q": "Does the clinic offer dental surgery on site?",
+        "faq6Q": "Does the clinic offer sedation dentistry?",
+        "faq7Q": "Are payment plans available?",
+        "faq8Q": "How much will my visit cost?",
+        "faq9Q": "How do I find your office?",
+        "faq10Q": "What is a dental treatment plan?"
+      }
+    },
+
+    "services/index.html": {
+      "description": "Services page — 9 service sections",
+      "note": "Each service is a <div class='svc'> block with an h2 and paragraphs. Clients can update service descriptions.",
+      "editableFields": {
+        "services": ["Restorative", "Endodontics", "Periodontics", "Oral Surgery", "Implants", "Dentures", "Prosthodontics", "Orthodontics", "Cosmetic & Other"]
+      }
+    },
+
+    "contact/index.html": {
+      "description": "Contact page — info card, hours table, booking form",
+      "editableFields": {
+        "pageIntro": "Dr. Liu and her team are passionate about community dentistry...",
+        "findingUsNote": "We're in the Richlea Square complex above Tisol Pet Foods..."
+      }
+    }
+  },
+
+  "n8nInstructions": {
+    "onRequest": "Read this file first to understand which HTML files to fetch. For sitewide fields (phone/email/address/hours), fetch ALL files listed in appearsIn. For page-specific fields, fetch only that page's file.",
+    "onImageUpload": "Commit the uploaded image to assets/images/{filename}. Then update the src attribute in the relevant HTML file. Also update the alt text if the user provides a description.",
+    "doNotEdit": ["css/style.css", "js/main.js", "sitemap.xml", "robots.txt", "vercel.json", "*.csv", "*.md"],
+    "afterEdit": "Update the currentValue in this file to reflect the new content, then commit all changed files in a single commit."
+  }
+}

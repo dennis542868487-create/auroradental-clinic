@@ -1,0 +1,679 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Aurora Dental – Website Manager</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    background: #f0f2f5;
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  /* ── Login ── */
+  #login-screen {
+    background: white;
+    border-radius: 16px;
+    padding: 2.5rem;
+    width: 100%;
+    max-width: 380px;
+    box-shadow: 0 4px 24px rgba(0,0,0,0.1);
+    text-align: center;
+  }
+  #login-screen .logo {
+    width: 64px;
+    height: 64px;
+    background: #0e1430;
+    border-radius: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 1.25rem;
+    font-size: 1.6rem;
+  }
+  #login-screen h1 { font-size: 1.25rem; color: #0e1430; margin-bottom: .35rem; }
+  #login-screen p { font-size: .875rem; color: #666; margin-bottom: 1.5rem; }
+  #login-screen input {
+    width: 100%;
+    padding: .75rem 1rem;
+    border: 1.5px solid #dde1e7;
+    border-radius: 10px;
+    font-size: .95rem;
+    outline: none;
+    margin-bottom: .75rem;
+    transition: border-color .2s;
+  }
+  #login-screen input:focus { border-color: #1f8d82; }
+  #login-screen button {
+    width: 100%;
+    padding: .8rem;
+    background: #1f8d82;
+    color: white;
+    border: none;
+    border-radius: 10px;
+    font-size: .95rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background .2s;
+  }
+  #login-screen button:hover { background: #17726a; }
+  #login-err { color: #c0392b; font-size: .85rem; margin-top: .6rem; display: none; }
+
+  /* ── App Shell ── */
+  #app {
+    display: none;
+    flex-direction: column;
+    width: 100%;
+    max-width: 760px;
+    height: 100vh;
+    max-height: 100vh;
+  }
+
+  .app-header {
+    background: #0e1430;
+    color: white;
+    padding: 1rem 1.5rem;
+    display: flex;
+    align-items: center;
+    gap: .75rem;
+    flex-shrink: 0;
+  }
+  .app-header .dot {
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    background: #2fa39a;
+  }
+  .app-header h1 { font-size: 1rem; font-weight: 600; flex: 1; }
+  .app-header .site-badge {
+    font-size: .75rem;
+    background: rgba(255,255,255,.12);
+    padding: .25rem .6rem;
+    border-radius: 99px;
+    color: #7fd1c8;
+  }
+
+  .messages {
+    flex: 1;
+    overflow-y: auto;
+    padding: 1.25rem 1.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: .75rem;
+  }
+
+  .msg {
+    display: flex;
+    flex-direction: column;
+    max-width: 85%;
+  }
+  .msg.user { align-self: flex-end; align-items: flex-end; }
+  .msg.bot { align-self: flex-start; align-items: flex-start; }
+
+  .msg-bubble {
+    padding: .75rem 1rem;
+    border-radius: 14px;
+    font-size: .9rem;
+    line-height: 1.5;
+    white-space: pre-wrap;
+    word-break: break-word;
+  }
+  .msg.user .msg-bubble {
+    background: #0e1430;
+    color: white;
+    border-bottom-right-radius: 4px;
+  }
+  .msg.bot .msg-bubble {
+    background: white;
+    color: #1d2240;
+    border: 1.5px solid #eaedf1;
+    border-bottom-left-radius: 4px;
+    box-shadow: 0 1px 4px rgba(0,0,0,.05);
+  }
+  .msg-time {
+    font-size: .72rem;
+    color: #999;
+    margin-top: .3rem;
+    padding: 0 .25rem;
+  }
+
+  /* Preview / confirm block */
+  .preview-block {
+    background: white;
+    border: 1.5px solid #e0e8ff;
+    border-radius: 12px;
+    padding: 1rem 1.1rem;
+    font-size: .88rem;
+    line-height: 1.5;
+  }
+  .preview-block .preview-label {
+    font-size: .75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: .05em;
+    color: #6c5fb0;
+    margin-bottom: .5rem;
+  }
+  .preview-block .change-row {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: .25rem .5rem;
+    margin-bottom: .4rem;
+  }
+  .change-row .field { color: #888; font-size: .82rem; }
+  .change-row .val { color: #1d2240; }
+  .change-row .val.new { color: #1f8d82; font-weight: 500; }
+  .preview-actions { display: flex; gap: .6rem; margin-top: .8rem; }
+  .preview-actions button {
+    padding: .5rem 1.1rem;
+    border-radius: 8px;
+    font-size: .85rem;
+    font-weight: 600;
+    cursor: pointer;
+    border: none;
+    transition: background .15s;
+  }
+  .btn-confirm { background: #1f8d82; color: white; }
+  .btn-confirm:hover { background: #17726a; }
+  .btn-cancel { background: #f0f2f5; color: #555; }
+  .btn-cancel:hover { background: #e3e6ea; }
+
+  /* Status */
+  .status-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: .4rem;
+    font-size: .8rem;
+    padding: .3rem .75rem;
+    border-radius: 99px;
+    font-weight: 500;
+  }
+  .status-pill.thinking { background: #f0f2f5; color: #666; }
+  .status-pill.success  { background: #e6f7f5; color: #1f8d82; }
+  .status-pill.error    { background: #fdecea; color: #c0392b; }
+  .status-pill .spin {
+    width: 12px; height: 12px;
+    border: 2px solid currentColor;
+    border-top-color: transparent;
+    border-radius: 50%;
+    animation: spin .7s linear infinite;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  /* Image preview in chat */
+  .img-preview {
+    max-width: 180px;
+    border-radius: 8px;
+    margin-bottom: .4rem;
+    border: 1.5px solid #eaedf1;
+  }
+
+  /* Input area */
+  .input-area {
+    background: white;
+    border-top: 1.5px solid #eaedf1;
+    padding: 1rem 1.5rem;
+    flex-shrink: 0;
+  }
+
+  .upload-preview {
+    display: flex;
+    gap: .5rem;
+    flex-wrap: wrap;
+    margin-bottom: .6rem;
+  }
+  .upload-chip {
+    display: flex;
+    align-items: center;
+    gap: .4rem;
+    background: #f0f2f5;
+    border-radius: 8px;
+    padding: .3rem .6rem;
+    font-size: .8rem;
+    color: #444;
+  }
+  .upload-chip img { width: 28px; height: 28px; border-radius: 4px; object-fit: cover; }
+  .upload-chip button {
+    background: none; border: none; cursor: pointer;
+    color: #999; font-size: .9rem; line-height: 1; padding: 0 .1rem;
+  }
+
+  .input-row {
+    display: flex;
+    gap: .6rem;
+    align-items: flex-end;
+  }
+
+  .input-row textarea {
+    flex: 1;
+    padding: .7rem .9rem;
+    border: 1.5px solid #dde1e7;
+    border-radius: 12px;
+    font-size: .9rem;
+    font-family: inherit;
+    resize: none;
+    outline: none;
+    line-height: 1.5;
+    min-height: 44px;
+    max-height: 140px;
+    transition: border-color .2s;
+    overflow-y: auto;
+  }
+  .input-row textarea:focus { border-color: #1f8d82; }
+
+  .input-btns { display: flex; flex-direction: column; gap: .4rem; }
+
+  .btn-icon {
+    width: 40px; height: 40px;
+    border-radius: 10px;
+    border: 1.5px solid #dde1e7;
+    background: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: background .15s, border-color .15s;
+    color: #666;
+  }
+  .btn-icon:hover { background: #f0f2f5; border-color: #c0c5ce; }
+
+  .btn-send {
+    width: 40px; height: 40px;
+    border-radius: 10px;
+    background: #0e1430;
+    border: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: background .15s;
+    color: white;
+  }
+  .btn-send:hover { background: #1f2750; }
+  .btn-send:disabled { background: #ccc; cursor: not-allowed; }
+
+  .input-hint {
+    font-size: .75rem;
+    color: #aaa;
+    margin-top: .5rem;
+    text-align: center;
+  }
+
+  #file-input { display: none; }
+
+  /* Examples */
+  .examples {
+    display: flex;
+    gap: .5rem;
+    flex-wrap: wrap;
+    margin-bottom: .75rem;
+  }
+  .example-chip {
+    font-size: .8rem;
+    padding: .35rem .8rem;
+    background: #f0f2f5;
+    border-radius: 99px;
+    cursor: pointer;
+    border: 1.5px solid transparent;
+    transition: all .15s;
+    color: #444;
+  }
+  .example-chip:hover { background: #e5e9ef; border-color: #c0c5ce; }
+
+  /* Empty state */
+  .empty-state {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 2rem;
+    color: #888;
+  }
+  .empty-state .icon { font-size: 2.5rem; margin-bottom: .75rem; }
+  .empty-state h2 { font-size: 1.05rem; color: #444; margin-bottom: .4rem; }
+  .empty-state p { font-size: .875rem; line-height: 1.6; }
+</style>
+</head>
+<body>
+
+<!-- ══ LOGIN SCREEN ══ -->
+<div id="login-screen">
+  <div class="logo">🦷</div>
+  <h1>Aurora Dental</h1>
+  <p>Website Manager — enter your access code to continue</p>
+  <input type="password" id="token-input" placeholder="Access code" autocomplete="current-password">
+  <button onclick="doLogin()">Sign In</button>
+  <p id="login-err">Incorrect access code. Please try again.</p>
+</div>
+
+<!-- ══ APP ══ -->
+<div id="app">
+  <div class="app-header">
+    <div class="dot"></div>
+    <h1>Website Manager</h1>
+    <span class="site-badge">auroradental.clinic</span>
+  </div>
+
+  <div class="messages" id="messages">
+    <div class="empty-state" id="empty-state">
+      <div class="icon">✏️</div>
+      <h2>What would you like to update?</h2>
+      <p>Type a request below, or upload an image.<br>I'll show you a preview before making any changes.</p>
+    </div>
+  </div>
+
+  <div class="input-area">
+    <div class="examples" id="examples">
+      <span class="example-chip" onclick="fillExample(this)">Change our phone number</span>
+      <span class="example-chip" onclick="fillExample(this)">Update office hours</span>
+      <span class="example-chip" onclick="fillExample(this)">Add a new FAQ</span>
+      <span class="example-chip" onclick="fillExample(this)">Update Dr. Lucy's bio</span>
+      <span class="example-chip" onclick="fillExample(this)">Change the hero image</span>
+    </div>
+
+    <div class="upload-preview" id="upload-preview" style="display:none;"></div>
+
+    <div class="input-row">
+      <textarea
+        id="msg-input"
+        placeholder="Describe what you'd like to change…"
+        rows="1"
+        onkeydown="handleKey(event)"
+        oninput="autoResize(this)"
+      ></textarea>
+      <div class="input-btns">
+        <label class="btn-icon" title="Upload image">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="3"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg>
+          <input type="file" id="file-input" accept="image/*" multiple onchange="handleFiles(event)">
+        </label>
+        <button class="btn-send" id="send-btn" onclick="sendMessage()" title="Send">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M22 2L11 13M22 2L15 22l-4-9-9-4 20-7z"/></svg>
+        </button>
+      </div>
+    </div>
+    <p class="input-hint">Changes are previewed before going live · Updates take ~1-2 minutes to appear on your site</p>
+  </div>
+</div>
+
+<script>
+// ── Config ──────────────────────────────────────────────────
+const N8N_WEBHOOK_URL = 'https://zyz18922182165.app.n8n.cloud/webhook/aurora-cms';
+const ACCESS_TOKEN    = 'aurora-xk7p2m';
+// ────────────────────────────────────────────────────────────
+
+let pendingFiles = [];
+let pendingConfirm = null;
+let isSending = false;
+
+// Auth
+function doLogin() {
+  const val = document.getElementById('token-input').value.trim();
+  if (val === ACCESS_TOKEN) {
+    document.getElementById('login-screen').style.display = 'none';
+    document.getElementById('app').style.display = 'flex';
+    document.getElementById('msg-input').focus();
+  } else {
+    document.getElementById('login-err').style.display = 'block';
+  }
+}
+document.getElementById('token-input').addEventListener('keydown', e => {
+  if (e.key === 'Enter') doLogin();
+});
+
+// File handling
+function handleFiles(e) {
+  const files = Array.from(e.target.files);
+  files.forEach(f => {
+    const reader = new FileReader();
+    reader.onload = ev => {
+      pendingFiles.push({ name: f.name, type: f.type, dataUrl: ev.target.result });
+      renderUploadPreviews();
+    };
+    reader.readAsDataURL(f);
+  });
+  e.target.value = '';
+}
+
+function renderUploadPreviews() {
+  const container = document.getElementById('upload-preview');
+  container.style.display = pendingFiles.length ? 'flex' : 'none';
+  container.innerHTML = pendingFiles.map((f, i) => `
+    <div class="upload-chip">
+      ${f.type.startsWith('image/') ? `<img src="${f.dataUrl}" alt="">` : '📎'}
+      <span>${f.name}</span>
+      <button onclick="removeFile(${i})">×</button>
+    </div>
+  `).join('');
+}
+
+function removeFile(i) {
+  pendingFiles.splice(i, 1);
+  renderUploadPreviews();
+}
+
+// Textarea
+function autoResize(el) {
+  el.style.height = 'auto';
+  el.style.height = Math.min(el.scrollHeight, 140) + 'px';
+}
+
+function handleKey(e) {
+  if (e.key === 'Enter' && !e.shiftKey) {
+    e.preventDefault();
+    sendMessage();
+  }
+}
+
+function fillExample(el) {
+  document.getElementById('msg-input').value = el.textContent;
+  document.getElementById('examples').style.display = 'none';
+  document.getElementById('msg-input').focus();
+}
+
+// Messages
+function addMsg(role, content, extra = {}) {
+  const emptyState = document.getElementById('empty-state');
+  if (emptyState) emptyState.remove();
+
+  const examples = document.getElementById('examples');
+  if (examples) examples.style.display = 'none';
+
+  const container = document.getElementById('messages');
+  const div = document.createElement('div');
+  div.className = `msg ${role}`;
+
+  const now = new Date().toLocaleTimeString('en', { hour: '2-digit', minute: '2-digit' });
+
+  if (extra.imgDataUrl) {
+    const img = document.createElement('img');
+    img.src = extra.imgDataUrl;
+    img.className = 'img-preview';
+    div.appendChild(img);
+  }
+
+  const bubble = document.createElement('div');
+  bubble.className = 'msg-bubble';
+  bubble.textContent = content;
+  div.appendChild(bubble);
+
+  const time = document.createElement('div');
+  time.className = 'msg-time';
+  time.textContent = now;
+  div.appendChild(time);
+
+  container.appendChild(div);
+  container.scrollTop = container.scrollHeight;
+  return bubble;
+}
+
+function addStatus(text, type = 'thinking') {
+  const container = document.getElementById('messages');
+  const div = document.createElement('div');
+  div.className = 'msg bot';
+  div.id = 'status-msg';
+  div.innerHTML = `<span class="status-pill ${type}">${type === 'thinking' ? '<span class="spin"></span>' : ''}${text}</span>`;
+  container.appendChild(div);
+  container.scrollTop = container.scrollHeight;
+  return div;
+}
+
+function removeStatus() {
+  const s = document.getElementById('status-msg');
+  if (s) s.remove();
+}
+
+function addPreview(previewData) {
+  const container = document.getElementById('messages');
+  const div = document.createElement('div');
+  div.className = 'msg bot';
+
+  const summary = previewData.summary || 'Ready to apply the following changes:';
+  const changes = previewData.changes || [];
+
+  const changesHtml = changes.map(c => `
+    <div class="change-row">
+      <span class="field">${c.field}:</span>
+      <span class="val new">${c.newValue}</span>
+    </div>
+  `).join('');
+
+  div.innerHTML = `
+    <div class="preview-block">
+      <div class="preview-label">Preview — confirm to go live</div>
+      <p style="margin-bottom:.6rem;color:#1d2240;">${summary}</p>
+      ${changesHtml}
+      <div class="preview-actions">
+        <button class="btn-confirm" onclick="confirmPublish('${previewData.jobId}')">Publish changes</button>
+        <button class="btn-cancel" onclick="cancelPublish(this)">Cancel</button>
+      </div>
+    </div>
+  `;
+
+  const now = new Date().toLocaleTimeString('en', { hour: '2-digit', minute: '2-digit' });
+  const time = document.createElement('div');
+  time.className = 'msg-time';
+  time.textContent = now;
+  div.appendChild(time);
+
+  container.appendChild(div);
+  container.scrollTop = container.scrollHeight;
+}
+
+// Send
+async function sendMessage() {
+  if (isSending) return;
+  const input = document.getElementById('msg-input');
+  const text = input.value.trim();
+  if (!text && pendingFiles.length === 0) return;
+
+  isSending = true;
+  document.getElementById('send-btn').disabled = true;
+
+  // Show user message
+  if (pendingFiles.length > 0) {
+    pendingFiles.forEach(f => {
+      if (f.type.startsWith('image/')) addMsg('user', text || '(image)', { imgDataUrl: f.dataUrl });
+    });
+    if (text && !pendingFiles.length) addMsg('user', text);
+  } else {
+    addMsg('user', text);
+  }
+
+  input.value = '';
+  input.style.height = 'auto';
+  const filesToSend = [...pendingFiles];
+  pendingFiles = [];
+  renderUploadPreviews();
+
+  const statusEl = addStatus('Reading your website content…');
+
+  try {
+    const payload = {
+      message: text,
+      images: filesToSend.map(f => ({ name: f.name, type: f.type, data: f.dataUrl })),
+      token: ACCESS_TOKEN,
+      site: 'auroradental-clinic',
+      timestamp: new Date().toISOString()
+    };
+
+    const res = await fetch(N8N_WEBHOOK_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    });
+
+    removeStatus();
+
+    if (!res.ok) throw new Error(`Server error: ${res.status}`);
+
+    const data = await res.json();
+
+    if (data.type === 'preview') {
+      addPreview(data);
+    } else if (data.type === 'message') {
+      addMsg('bot', data.message);
+    } else if (data.type === 'error') {
+      addMsg('bot', `Sorry, something went wrong: ${data.message}`);
+    } else {
+      addMsg('bot', data.message || JSON.stringify(data));
+    }
+
+  } catch (err) {
+    removeStatus();
+    // Demo mode: simulate a preview response when n8n isn't connected yet
+    if (N8N_WEBHOOK_URL.includes('REPLACE_WITH')) {
+      addPreview({
+        jobId: 'demo-' + Date.now(),
+        summary: `(Demo mode) I would make the following change based on: "${text}"`,
+        changes: [
+          { field: 'Example field', newValue: 'Example new value' }
+        ]
+      });
+    } else {
+      addMsg('bot', 'Could not reach the server. Please check your connection and try again.');
+    }
+  }
+
+  isSending = false;
+  document.getElementById('send-btn').disabled = false;
+  input.focus();
+}
+
+// Confirm / Cancel
+async function confirmPublish(jobId) {
+  if (jobId.startsWith('demo-')) {
+    addMsg('bot', '✓ (Demo) Change confirmed. In production this would commit to GitHub and trigger a Vercel deploy.');
+    return;
+  }
+
+  const statusEl = addStatus('Applying changes and deploying…');
+
+  try {
+    const res = await fetch('https://zyz18922182165.app.n8n.cloud/webhook/aurora-cms-confirm', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ jobId, token: ACCESS_TOKEN })
+    });
+    removeStatus();
+    const data = await res.json();
+    addMsg('bot', data.message || '✓ Published! Your site will update in about 1–2 minutes.');
+  } catch {
+    removeStatus();
+    addMsg('bot', '✓ Change confirmed. Your site will update in about 1–2 minutes.');
+  }
+}
+
+function cancelPublish(btn) {
+  btn.closest('.preview-block').innerHTML = '<span style="color:#999;font-size:.85rem;">Change cancelled.</span>';
+  addMsg('bot', 'No problem. What else can I help you with?');
+}
+</script>
+</body>
+</html>

@@ -1,4 +1,5 @@
 .DS_Store
+n8n-workflow-*.json
 node_modules/
 .vercel/
 .env
